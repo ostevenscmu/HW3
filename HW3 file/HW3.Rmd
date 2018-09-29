@@ -44,7 +44,7 @@ coords <- data.frame(do.call('rbind',strsplit(as.character(data$Coordinates), ',
 data <- mutate(data, lat = coords$lat, lon = coords$lon)
 
 typeof(data$lat[1])
-state.load <- readOGR("/Users/owenstevenson/Documents/Heinz/Classes/Fall 2018/R Shiny for Operations Management/HW/HW3 file/gz_2010_us_040_00_5m.json")
+state.load <- readOGR("gz_2010_us_040_00_5m.json")
 test <- distinct(select(data, "State", "Side"))
 
 ## function from https://github.com/tidyverse/dplyr/issues/2278
@@ -79,10 +79,15 @@ m <-
     baseGroups = c("Black & White","Watercolor"),
     options = layersControlOptions(collapsed = FALSE)
   ) %>%
-  addPolygons(weight = 1, color = "grey", label = ~paste0(NAME, " - Side: ", Side), highlight = highlightOptions(weight = 3, color = "red" , bringToFront = TRUE), fillColor = ~pal(Side), fill = ~pal(Side))
+  addPolygons(weight = 1, color = "grey", label = ~paste0(NAME, " - Side: ", Side), highlight = highlightOptions(weight = 3, color = "red" , bringToFront = TRUE), fillColor = ~pal(Side), fill = ~pal(Side)) %>%
+  addLegend(title = "Confederate Monuments & Civil War State Allegiences", position = "bottomright", pal = pal, values = c("North","South","Border","Not a State"))
 
-railroads.load <-  readOGR("/Users/owenstevenson/Documents/Heinz/Classes/Fall 2018/R Shiny for Operations Management/HW/HW3 file/RR1826-1911Modified0509161/RR1826-1911Modified050916.shp", layer = "RR1826-1911Modified050916", GDAL1_integer64_policy = TRUE)
+m
 
+## Line file map - Railroads
+railroads.load <-  readOGR("lasses/Fall 2018/R Shiny for Operations Management/HW/HW3 file/RR1826-1911Modified0509161/RR1826-1911Modified050916.shp", layer = "RR1826-1911Modified050916", GDAL1_integer64_policy = TRUE)
+
+railroads2.load <- readOGR("./tl_2018_us_rails/tl_2018_us_rails.shp", layer = "tl_2018_us_rails", GDAL1_integer64_policy = TRUE)
 
 glimpse(railroads.load)
 m2 <- 
@@ -91,7 +96,12 @@ m2 <-
   addTiles() %>%
   addPolygons()
   
-m2
+m3 <- 
+  railroads2.load %>%
+  leaflet() %>%
+  addTiles() %>%
+  addPolygons() %>%
+  addLegend(title = "Railroads of the US")
 
 
 ```
