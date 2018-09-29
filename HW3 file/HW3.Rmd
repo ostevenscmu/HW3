@@ -40,8 +40,6 @@ coords <- data.frame(do.call('rbind',strsplit(as.character(data$Coordinates), ',
   transmute(lat = as.character(X1), lon = as.character(trimws(X2))) %>%
   mutate(lat = as.numeric(lat), lon = as.numeric(lon))
 
-
-
 data <- mutate(data, lat = coords$lat, lon = coords$lon)
 
 typeof(data$lat[1])
@@ -66,7 +64,7 @@ state.load@data <-
 
 
 test <- select(data, "State", "Side")
-pal <- colorFactor(palette = c("blue","red","yellow","gray"),levels = c("North","South","Border","Not a State"))
+pal <- colorFactor(palette = c("blue","red","yellow","gray"), levels = c("North","South","Border","Not a State"))
 
 glimpse(state.load@data)
 ### Confederate Monuments
@@ -85,29 +83,33 @@ m <-
   setView(lng = -98.35, lat = 39.8283, zoom = 3)
 
 m
+```
 
+```{r}
 ## Line file map - Railroads
 railroads.load <-  readOGR("lasses/Fall 2018/R Shiny for Operations Management/HW/HW3 file/RR1826-1911Modified0509161/RR1826-1911Modified050916.shp", layer = "RR1826-1911Modified050916", GDAL1_integer64_policy = TRUE)
 
+# Comment or delete broken lines of code!
 railroads2.load <- readOGR("./tl_2018_us_rails/tl_2018_us_rails.shp", layer = "tl_2018_us_rails", GDAL1_integer64_policy = TRUE)
 
-glimpse(railroads.load)
-m2 <- 
-  railroads.load %>%
-  leaflet() %>%
-  addTiles() %>%
-  addPolygons()
+# glimpse(railroads.load)
+# m2 <- 
+#   railroads.load %>%
+#   leaflet() %>%
+#   addTiles() %>%
+#   addPolygons()
   
 # This one actually works
+# Which one?!? Above or below? Because the data for the first map didn't load...
 
 m3 <- 
   railroads2.load %>%
   leaflet() %>%
   addTiles() %>%
-  addPolygons() %>%
-  addLegend(title = "Railroads of the US")
+  addPolygons() #%>%
+  #addLegend(title = "Railroads of the US")
 
-
+m3
 ```
 
 
