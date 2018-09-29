@@ -34,6 +34,7 @@ key <- extract_key_from_url("https://docs.google.com/spreadsheets/d/17ps4aqRyaIf
 data <- read_csv("Whose Heritage 2018 Master Sheet - Whose Heritage 2018 Master 7.27.18.csv")
 colnames(data) <- make.names(colnames(data))
 
+# split Coordinates row into Lat & Lon
 data <- mutate(data, Dedicated.Num = as.numeric(data$Year.Dedicated))
 coords <- data.frame(do.call('rbind',strsplit(as.character(data$Coordinates), ',', fixed = T))) %>%
   transmute(lat = as.character(X1), lon = as.character(trimws(X2))) %>%
@@ -47,7 +48,7 @@ typeof(data$lat[1])
 state.load <- readOGR("gz_2010_us_040_00_5m.json")
 test <- distinct(select(data, "State", "Side"))
 
-## function from https://github.com/tidyverse/dplyr/issues/2278
+## function from https://github.com/tidyverse/dplyr/issues/2278 ## didn't end up needing
 strict_left_join <- function(x, y, by = NULL, ...){
   by <- common_by(by, x, y)
   if(any(duplicated(y[by$y]))) {
@@ -57,7 +58,7 @@ strict_left_join <- function(x, y, by = NULL, ...){
 
 data$State <- as.character(data$State)
 
-## Joins
+## Joins in order to merge State info to shapefile
 state.load@data <- 
   state.load@data %>%
   inner_join(statenames, by = c("NAME" = "State")) %>%
@@ -80,7 +81,8 @@ m <-
     options = layersControlOptions(collapsed = FALSE)
   ) %>%
   addPolygons(weight = 1, color = "grey", label = ~paste0(NAME, " - Side: ", Side), highlight = highlightOptions(weight = 3, color = "red" , bringToFront = TRUE), fillColor = ~pal(Side), fill = ~pal(Side)) %>%
-  addLegend(title = "Confederate Monuments & Civil War State Allegiences", position = "bottomright", pal = pal, values = c("North","South","Border","Not a State"))
+  addLegend(title = "Confederate Monuments & Civil War State Allegiences", position = "bottomright", pal = pal, values = c("North","South","Border","Not a State")) %>%
+  setView(lng = -98.35, lat = 39.8283, zoom = 3)
 
 m
 
@@ -96,6 +98,8 @@ m2 <-
   addTiles() %>%
   addPolygons()
   
+# This one actually works
+
 m3 <- 
   railroads2.load %>%
   leaflet() %>%
